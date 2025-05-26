@@ -1,0 +1,145 @@
+@startuml namespace "Learning Management System"
+' Base abstract class
+abstract class User {
+  - name: String
+  - email: String
+  - password: String
+  + User(name: String, email: String, password: String)
+  + getName(): String
+  + setName(name: String): void
+  + getEmail(): String
+  + setEmail(email: String): void
+  + getPassword(): String
+  + setPassword(password: String): void
+  + login(): boolean
+  + logout(): void
+}
+
+class Admin {
+  - role: String
+  + Admin(name: String, email: String, password: String, role: String)
+  + getRole(): String
+  + setRole(role: String): void
+  + createUser(user: User): void
+  + deleteUser(user: User): void
+  + manageUsers(): List<User>
+  + login(): boolean
+}
+
+class Lecturer {
+  - employeeId: String
+  - coursesTaught: List<Course>
+  + Lecturer(name: String, email: String, password: String, employeeId: String)
+  + getEmployeeId(): String
+  + setEmployeeId(employeeId: String): void
+  + getCoursesTaught(): List<Course>
+  + addCourse(course: Course): void
+  + removeCourse(course: Course): void
+  + login(): boolean
+}
+
+class Student {
+  - studentId: String
+  - enrolledCourses: List<Course>
+  + Student(name: String, email: String, password: String, studentId: String)
+  + getStudentId(): String
+  + setStudentId(id: String): void
+  + getEnrolledCourses(): List<Course>
+  + enroll(course: Course): void
+  + dropCourse(course: Course): void
+  + tutorStudent(peer: Student): void
+  + login(): boolean
+}
+
+class Course {
+  - code: String
+  - title: String
+  - schedule: String
+  - assignments: List<Assignment>
+  + Course(code: String, title: String, schedule: String)
+  + getCode(): String
+  + setCode(code: String): void
+  + getTitle(): String
+  + setTitle(title: String): void
+  + getSchedule(): String
+  + setSchedule(schedule: String): void
+  + getAssignments(): List<Assignment>
+  + addAssignment(assignment: Assignment): void
+  + removeAssignment(assignment: Assignment): void
+}
+
+class Assignment {
+  - title: String
+  - dueDate: Date
+  - questions: List<Question>
+  + Assignment(title: String, dueDate: Date)
+  + getTitle(): String
+  + setTitle(title: String): void
+  + getDueDate(): Date
+  + setDueDate(date: Date): void
+  + getQuestions(): List<Question>
+  + addQuestion(question: Question): void
+}
+
+class Question {
+  - text: String
+  - type: String
+  - points: int
+  + Question(text: String, type: String, points: int)
+  + getText(): String
+  + getType(): String
+  + setType(type: String): void
+  + getPoints(): int
+  + setPoints(points: int): void
+  + updateText(newText: String): void
+}
+
+class GradeService {
+  + calculateFinalGrade(student: Student, course: Course): double
+  + calculateAssignmentScore(student: Student, assignment: Assignment): double
+  + generateTranscript(student: Student): String
+}
+
+
+interface Exportable {
+  + export(): void
+}
+
+class PDFExportService {
+  + export(): void
+}
+
+class CSVExportService {
+  + export(): void
+}
+
+' Generalization
+User <|-- Student
+User <|-- Lecturer
+User <|-- Admin
+
+' Association
+Student "1..*" -- "0..*" Course : enrolls in
+
+' Directed Association
+Lecturer "1" --> "*" Course : teaches
+
+' Aggregation
+Course o-- "*" Assignment
+
+' Composition
+Assignment *-- "*" Question
+
+' Dependency
+GradeService ..> Student
+GradeService ..> Assignment
+GradeService ..> Course
+Admin ..> User
+
+' Realization
+PDFExportService ..|> Exportable
+CSVExportService ..|> Exportable
+
+' Reflexive Association
+Student "0..*" -- "0..1" Student : tutors
+@enduml
